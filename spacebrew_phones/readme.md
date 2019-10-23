@@ -7,8 +7,9 @@ as a stringified json object). This app also controls of the color the browser s
 hue, sat, and light.  
   
 Author:		Julio Terra from LAB at Rockwell Group  
-Date: 		October 24, 2012  
-Version:	1.0.1  
+Date: 		October 23, 2019 
+Version:	1.0.2  
+Modified by:	Marc Raum, CIID
    
 System Requirements:  
 * Mac iOS and OSX (not tested on any other platform)  
