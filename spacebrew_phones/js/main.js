@@ -9,8 +9,11 @@
  *
  * @filename    main.js
  * @author      Julio Terra, LAB at Rockwell Group
- * @modified    10/25/2012
- * @version     1.0.0
+ * @modified    10/23/2019
+ * @version     1.0.1
+ *
+ * Revision history: The web 2019 is not the same as 2012. Sensor API supports gyros. 
+ *                   Hence, the code may become Apple agnostic.
  * 
  */
 
@@ -72,9 +75,10 @@ $(window).bind("load", function() {
   setTimeout(function() { window.scrollTo(0, 1) }, 100);
   setInterval(function() { displayStatusMsg() }, 50);
 
-  deviceCheck();
+  //deviceCheck();
   setup();
-  registerIphoneEventListeners();
+  registerEventListeners();
+  //registerIphoneEventListeners();
   registerUserEventListeners();
 });
 
@@ -164,6 +168,40 @@ var deviceCheck = function () {
   } else {
     console.log("[deviceCheck] navigator userAgent ", navigator.userAgent);
   }  
+}
+
+/**
+ * registerEventListeners Register callback methods for accelerometer and gyrometer events.
+ *   If connected to Spacebrew, messages are sent when a new event is received.
+ * @return {none} 
+ */
+var registerEventListeners = function () {
+  console.log("[registerEventListeners] window object ", window );
+  
+  // Create a new Gyroscope event handler with a poll frequency of 60 Hz
+  let gyroscope = new Gyroscope({frequency: 60});
+    
+  gyroscope.addEventListener('devicemotion', e => {
+    processEvent("accel", event.accelerationIncludingGravity);
+  });
+    
+  state.services["accel"] = true;
+  
+  gyroscope.start();
+
+
+  // check if device has an gyrometer, and if so, then register an event handler
+  if (window.DeviceOrientationEvent) {
+    if (debug) console.log("[registerEventListeners] gyro device orientation event available " );
+    window.addEventListener("deviceorientation", function() {
+      processEvent("gyro", event);
+    }, true);    
+    state.services["gyro"] = true;
+  } else {
+    $("#deviceMsggyro h1").html(htmlForTextWithEmbeddedNewlines("gyro"));    
+    $("#deviceMsggyro p").html(htmlForTextWithEmbeddedNewlines("Data not available."));    
+    state.services["gyro"] = false;
+  }
 }
 
 /**
